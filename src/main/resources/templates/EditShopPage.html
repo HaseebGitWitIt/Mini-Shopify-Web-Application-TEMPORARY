@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <script type="text/javascript" th:src="@{https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js}">
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="/css/Global.css">
+
+    <title>Your Shop Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+    <h1>Edit Shop Form</h1>
+
+    <input type="hidden" th:value="${shop.id}" id="shopId" />
+    <input type="hidden" th:value="${currUser.id}" id="currUserId" />
+    <span hidden id="username" th:value="${currUser.userName}"></span>
+    <span hidden id="isCustomer" th:value="${isCustomer}"></span>
+
+    <br />
+    <h2>Edit Shop Name</h2>
+    <form action="#" th:action="@{/changeShopName}" th:object="${shop}" method="post" id="editNameForm">
+        <input type="hidden" th:value="${shop.id}" name="shopId" />
+
+        <p>Shop Name: <input type="text" th:value="${shop.shopName}" th:field="*{shopName}" id="shopNameBox" /></p>
+
+        <input type="submit" value="Edit Name" />
+    </form>
+
+    <h2>Edit Shop Tags</h2>
+    <h3>Tags:</h3>
+    <div th:style="${#lists.isEmpty(shop.tags) ? 'display:block' : 'display:none'}" id="noTagDiv">
+            <p>This store does not have any tags!</p>
+        </div>
+        <div th:style="${not #lists.isEmpty(shop.tags) ? 'display:block' : 'display:none'}" id="nonEmptyTagDiv">
+            <table id="tagTable">
+                <tr>
+                    <th>Tag Value</th>
+                    <th></th>
+                </tr>
+                <tr th:each="tag: ${shop.tags}">
+                    <td th:text="${tag.tagName}"></td>
+                    <td><input type="button" value="Remove Tag" class="removeTagButton" th:id="'TAG_' + ${tag.id}"/></td>
+                </tr>
+            </table>
+        </div>
+        <form action="#" th:action="@{/addTag}" th:object="${tag}" method="post" id="addTagForm">
+            <input type="hidden" th:value="${shop.id}" name="shopId"/>
+
+            <p>New Tag Value: <input type="text" th:field="*{tagName}" id="tagNameBox"/></p>
+
+            <input type="submit" value="Add Tag"/>
+        </form>
+
+        <h2>Edit Shop Items</h2>
+        <p><strong>Items:</strong></p>
+        <div th:style="${#lists.isEmpty(shop.items) ? 'display:block' : 'display:none'}" id="noItemDiv">
+            <p>This store does not have any items!</p>
+        </div>
+        <div th:style="${not #lists.isEmpty(shop.items) ? 'display:block' : 'display:none'}" id="nonEmptyItemDiv">
+            <table id="itemTable">
+                <tr>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Image URL</th>
+                    <th>Image AltText</th>
+                    <th>Quantity</th>
+                    <th>Cost</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                <tr th:each="item: ${shop.items}" th:id="'ITEM_' + ${item.id}"}>
+                    <td> <input type='text' th:value="${item.itemName}" name="itemName"/> </td>
+
+                    <td th:if="${not #lists.isEmpty(item.images)}">
+                        <a th:href="${item.images[0]?.url}">
+                            <img th:src="${item.images[0]?.url}" th:alt="${item.images[0]?.altText}">
+                        </a>
+                    </td>
+                    <td th:if="${#lists.isEmpty(item.images)}">(NO IMAGE)</td>
+
+                    <td th:if="${not #lists.isEmpty(item.images)}"> <input type='text' th:value="${item.images[0]?.url}" name="url"/> </td>
+                    <td th:if="${#lists.isEmpty(item.images)}"> <input type='text' value="" name="url"/> </td>
+
+                    <td th:if="${not #lists.isEmpty(item.images)}"> <input type='text' th:value="${item.images[0]?.altText}" name="altText"/> </td>
+                    <td th:if="${#lists.isEmpty(item.images)}"> <input type='text' value="" name="altText"/> </td>
+
+                    <td> <input type='number' step="1" min="0" th:value="${item.inventory}" name="inventory"/> </td>
+                    <td> <input type='number' step="0.01" min="0" th:value="${item.cost}" name="cost"/> </td>
+                    <td><input type="button" value="Remove Item" class="removeItemButton" /></td>
+                    <td><input type="button" value="Edit Item" class="saveChangesButton" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <p><strong>Add a new Item:</strong></p>
+        <form action="#" th:action="@{/addItem}" th:object="${item}" method="post" id="addItemForm">
+            <input type="hidden" th:value="${shop.id}" name="shopId"/>
+
+            <p>Item Name: <input type="text" th:field="*{itemName}"/></p>
+            <p>Image URL: <input type="text" size="75" name="url"/></p>
+            <p>Alternative Text Description <input type="text" name="altText"/></p>
+            <p>Quantity: <input type="number" placeholder="0" step="1" min="0" th:field="*{inventory}"/></p>
+            <p>Cost: <input type="number" placeholder="0.0" step="0.01" min="0"  th:field="*{cost}"/></p>
+
+            <input type="submit" value="Add Item"/>
+        </form>
+
+        <form action="#" th:action="@{/goToMerchantMenuPage}">
+            <input type="submit" value="Done Editing"/>
+        </form>
+
+        <script type="text/javascript" th:src="@{/js/LoadingAnimationController.js}"></script>
+        <script type="text/javascript" th:src="@{/js/EditShopController.js}"></script>
+        <script type="text/javascript" th:src="@{/js/SidebarController.js}"></script>
+        <script type="text/javascript" th:src="@{/js/CloudServiceController.js}"></script>
+    </body>
+</html>
